@@ -7,8 +7,7 @@ var importReport = () => {
   messages.reverse();
   sheet.getRange('D1').setValue(messages[0].getDate())
 //  var attachment = messages[0].getAttachments()[0].setContentType('text/csv').getDataAsString();
-  var attachment = messages[0].getAttachments()[0]
-  Utilities.Charset
+  var attachment = messages[0].getAttachments()[0].getDataAsString()
 //  var csvData = Utilities.parseCsv(attachment.getDataAsString(), ",")
 //  sheet.getRange('A4').setValue(csvData)
 //  sheet.getRange('A4').setValue(ContentService.createTextOutput(attachment).getContent())
