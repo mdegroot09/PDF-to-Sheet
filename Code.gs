@@ -1,30 +1,63 @@
 var importReport = () => {
 
-  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Sheet1');
-  var email = sheet.getRange('B2').getValue();
-  var threads = GmailApp.search('in:inbox from:"' + email + '"');
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('sheet1');
+  var threads = GmailApp.search('in:inbox from:"mdegroot09@gmail.com"');
   var messages = threads[0].getMessages();
   messages.reverse();
   sheet.getRange('D1').setValue(messages[0].getDate())
+  sheet.getRange('D2').setValue(new Date())
 //  var attachment = messages[0].getAttachments()[0].setContentType('text/csv').getDataAsString();
-  var attachment = messages[0].getAttachments()[0].getDataAsString()
-//  var csvData = Utilities.parseCsv(attachment.getDataAsString(), ",")
-//  sheet.getRange('A4').setValue(csvData)
-//  sheet.getRange('A4').setValue(ContentService.createTextOutput(attachment).getContent())
-  sheet.getRange('A4').setValue(attachment);
+  var attachment = messages[0].getAttachments()[0].setContentType(MimeType.FOLDER).getDataAsString()
+  return sheet.getRange('A4').setValue(attachment);
   
-//  attachment.setContentType('text/csv');
-//
-//  // Is the attachment a CSV file
-//  if (attachment.getContentType() === "text/csv") {
-//
-//    var csvData = Utilities.parseCsv(attachment.getDataAsString(), ",");
-//  
-//    // Remember to clear the content of the sheet before importing new data
-//    // sheet.clearContents().clearFormats();
-//    sheet.getRange(4, 1, csvData.length, csvData[0].length).setValues(csvData);
-//  
-//    // GmailApp.moveMessageToTrash(messages);
-//    // GmailApp.moveThreadsToArchive(messages[0])
-//  }
+  var csvData = Utilities.parseCsv(attachment.getDataAsString(), " ")
+  sheet.clearContents().clearFormats();
+  sheet.getRange(1, 1, csvData.length, csvData[0].length).setValues(csvData)
+}
+
+function extractTextFromPDF() {
+
+  // PDF File URL
+  // You can also pull PDFs from Google Drive
+  var url = "https://img.labnol.org/files/Most-Useful-Websites.pdf";
+
+  var blob = UrlFetchApp.fetch(url).getBlob();
+  var resource = {
+    title: blob.getName(),
+    mimeType: blob.getContentType()
+  };
+
+  // Enable the Advanced Drive API Service
+  var file = Drive.Files.insert(resource, blob, {ocr: true, ocrLanguage: "en"});
+
+  // Extract Text from PDF file
+  var doc = DocumentApp.openById(file.id);
+  var text = doc.getBody().getText();
+
+  return text;
+}
+
+function testTextFromPDF(){
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('sheet1');
+  
+  var threads = GmailApp.search('in:inbox from:"mdegroot09@gmail.com"');
+  var messages = threads[0].getMessages();
+  messages.reverse();
+  
+  var blob = messages[0].getAttachments()[0].copyBlob()
+  var resource = {
+    title: blob.getName(),
+    mimeType: blob.getContentType()
+  };
+  
+  // Enable the Advanced Drive API Service
+  var file = Drive.Files.insert(resource, blob, {ocr: true, ocrLanguage: "en"});
+  
+  var doc = DocumentApp.openById(file.id);
+  var text = doc.getBody().getText();
+  text = String(text).split('\n')
+  
+  text.forEach(function(a,i){
+    sheet.getRange('A' + (4 + i)).setValue(a);
+  })
 }
