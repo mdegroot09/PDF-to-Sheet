@@ -1,7 +1,7 @@
 function importReport(){
 
   var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('sheet1');
-  var threads = GmailApp.search('in:inbox from:"mdegroot09@gmail.com"');
+  var threads = GmailApp.search('in:"Pricing for Casey"');
   var messages = threads[0].getMessages();
   messages.reverse();
   sheet.getRange('D1').setValue(messages[0].getDate())
@@ -23,8 +23,9 @@ function extractTextFromPDF() {
   
   var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('sheet1');
   
-  var threads = GmailApp.search('in:inbox from:"mdegroot09@gmail.com"');
-  var messages = threads[0].getMessages();
+  // var threads = GmailApp.search('in:inbox from:"mdegroot09@gmail.com"');
+  var threads = GmailApp.search('in:"Pricing for Casey"');
+  var messages = threads[1].getMessages();
   messages.reverse();
   
   var blob = messages[0].getAttachments()[0].copyBlob()
